@@ -31,7 +31,7 @@ int main() {
 			auto g = double(j) / (image_height - 1);
 			auto b = 0.25;
 			Color pixelColor(r, g, b);
-			WriteColor(std::cout, pixelColor);
+            WriteColor(std::cout, pixelColor);
         }
     }
     DBOUT("\nDone.\n");
