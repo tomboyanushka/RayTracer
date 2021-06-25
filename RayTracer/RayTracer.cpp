@@ -3,6 +3,8 @@
 #include <Windows.h>
 #include <iostream>
 #include <sstream>
+#include "Vec3.h"
+#include "Color.h"
 
 #define DBOUT( s )            \
 {                             \
@@ -25,15 +27,11 @@ int main() {
         DBOUT("\rScanlines remaining: " << j);
         for (int i = 0; i < image_width; ++i)
         {
-            auto r = double(i) / (image_width - 1);
-            auto g = double(j) / (image_height - 1);
-            auto b = 0.25;
-
-            int ir = static_cast<int>(255.999 * r);
-            int ig = static_cast<int>(255.999 * g);
-            int ib = static_cast<int>(255.999 * b);
-
-            std::cout << ir << ' ' << ig << ' ' << ib << '\n';
+			auto r = double(i) / (image_width - 1);
+			auto g = double(j) / (image_height - 1);
+			auto b = 0.25;
+			Color pixelColor(r, g, b);
+			WriteColor(std::cout, pixelColor);
         }
     }
     DBOUT("\nDone.\n");
