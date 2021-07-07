@@ -39,6 +39,26 @@ inline double RandomDouble(double min, double max)
 	return min + (max - min) * RandomDouble();
 }
 
+inline Vec3 Random()
+{
+	return Vec3(RandomDouble(), RandomDouble(), RandomDouble());
+}
+
+inline static Vec3 Random(double min, double max)
+{
+	return Vec3(RandomDouble(min, max), RandomDouble(min, max), RandomDouble(min, max));
+}
+
+Vec3 Random_inUnitSphere()
+{
+	while (true)
+	{
+		auto p = Random(-1, 1);
+		if (p.length_squared() >= 1) continue;
+		return p;
+	}
+}
+
 inline double Clamp(double x, double min, double max)
 {
 	if (x < min) return min;

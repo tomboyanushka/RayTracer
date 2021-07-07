@@ -17,17 +17,23 @@
    OutputDebugStringW( os_.str().c_str() );  \
 }
 
-Color RayColor(const Ray& ray, const Hittable& world)
+Color RayColor(const Ray& ray, const Hittable& world, int depth)
 {
-    HitRecord record;
-    if (world.IsHit(ray, 0, infinity, record))
+	HitRecord record;
+	// If we've exceeded the ray bounce limit, no more light is gathered.
+    if (depth <= 0)
     {
-        return 0.5f * (record.normal + Color(1, 1, 1));
+        return Color(0, 0, 0);
     }
+	if (world.IsHit(ray, 0, infinity, record))
+	{
+        Point3 target = record.p + record.normal + Random_inUnitSphere();
+        return 0.5f * RayColor(Ray(record.p, target - record.p), world, depth - 1);
+	}
 
-    Vec3 unitDirection = UnitVector(ray.Direction());
-    auto t = 0.5f * (unitDirection.y() + 1.0f);
-    return (1.0f - t) * Color(1.0f, 1.0f, 1.0f) + t * Color(0.5f, 0.7f, 1.0f);
+	Vec3 unitDirection = UnitVector(ray.Direction());
+	auto t = 0.5f * (unitDirection.y() + 1.0f);
+	return (1.0f - t) * Color(1.0f, 1.0f, 1.0f) + t * Color(0.5f, 0.7f, 1.0f);
 }
 
 int main() {
@@ -37,6 +43,8 @@ int main() {
     const int imageWidth = 400;
     const int imageHeight = static_cast<int>(imageWidth / aspectRatio);
     const int samplesPerPixel = 100;
+    const int maxDepth = 50;
+    const double gamma = 2.4;
 
     // World
     HittableList world;
@@ -60,10 +68,10 @@ int main() {
 				auto u = (i + RandomDouble()) / (imageWidth - 1);
 				auto v = (j + RandomDouble()) / (imageHeight - 1);
                 Ray ray = cam.GetRay(u, v);
-                pixelColor += RayColor(ray, world);
+                pixelColor += RayColor(ray, world, maxDepth);
             }
 
-            WriteColor(std::cout, pixelColor, samplesPerPixel);
+            WriteColor(std::cout, pixelColor, samplesPerPixel, gamma);
         }
     }
     DBOUT("\nDone.\n");
