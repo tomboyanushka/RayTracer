@@ -59,6 +59,25 @@ Vec3 Random_inUnitSphere()
 	}
 }
 
+Vec3 RandomUnitVector()
+{
+	return UnitVector(Random_inUnitSphere());
+}
+
+Vec3 Random_inHemisphere(const Vec3& normal)
+{
+	Vec3 inUnitSphere = Random_inUnitSphere();
+	// In the same hemisphere as the normal
+	if (Dot(inUnitSphere, normal) > 0.0)
+	{
+		return inUnitSphere;
+	}
+	else
+	{
+		return -inUnitSphere;
+	}
+}
+
 inline double Clamp(double x, double min, double max)
 {
 	if (x < min) return min;

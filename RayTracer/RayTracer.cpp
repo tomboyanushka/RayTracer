@@ -27,7 +27,7 @@ Color RayColor(const Ray& ray, const Hittable& world, int depth)
     }
 	if (world.IsHit(ray, 0.001, infinity, record))
 	{
-        Point3 target = record.p + record.normal + Random_inUnitSphere();
+        Point3 target = record.p + record.normal + Random_inHemisphere(record.normal);
         return 0.5f * RayColor(Ray(record.p, target - record.p), world, depth - 1);
 	}
 
