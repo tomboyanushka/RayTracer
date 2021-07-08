@@ -17,7 +17,7 @@ void WriteColor(std::ostream& out, Color pixelColor, int samplesPerPixel, double
 	if (g != g) g = 0.0;
 	if (b != b) b = 0.0;
 
-	// Divide the color by the number of samples and gamma-correct for a gamma value of 2.0
+	// Divide the color by the number of samples and gamma-correct
 	auto scale = 1.0 / samplesPerPixel;
 	r = pow((scale * r), (1 / gamma));
 	g = pow((scale * g), (1 / gamma));
