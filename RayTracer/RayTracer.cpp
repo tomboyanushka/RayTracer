@@ -8,7 +8,7 @@
 #include "Color.h"
 #include "HittableList.h"
 #include "Sphere.h"
-#include "Utility.h"
+#include "Material.h"
 
 #define DBOUT( s )            \
 {                             \
@@ -27,8 +27,13 @@ Color RayColor(const Ray& ray, const Hittable& world, int depth)
     }
 	if (world.IsHit(ray, 0.001, infinity, record))
 	{
-        Point3 target = record.p + record.normal + Random_inHemisphere(record.normal);
-        return 0.5f * RayColor(Ray(record.p, target - record.p), world, depth - 1);
+        Ray scattered;
+        Color attenuation;
+        if (record.material->Scatter(ray, record, attenuation, scattered))
+        {
+            return attenuation * RayColor(scattered, world, depth - 1);
+        }
+        return Color(0, 0, 0);
 	}
 
 	Vec3 unitDirection = UnitVector(ray.Direction());
@@ -48,8 +53,16 @@ int main() {
 
     // World
     HittableList world;
-    world.Add(make_shared<Sphere>(Point3(0, 0, -1), 0.5));
-    world.Add(make_shared<Sphere>(Point3(0, -100.5, -1), 100));
+
+    auto groundMat = make_shared<Lambertian>(Color(0.8, 0.8, 0.0));
+    auto centerMat = make_shared<Lambertian>(Color(0.7, 0.3, 0.3));
+    auto leftMat = make_shared<Metal>(Color(0.8, 0.8, 0.8));
+    auto rightMat = make_shared<Metal>(Color(0.8, 0.6, 0.2));
+
+	world.Add(make_shared<Sphere>(Point3(0.0, -100.5, -1.0), 100.0, groundMat));
+	world.Add(make_shared<Sphere>(Point3(0.0, 0.0, -1.0), 0.5, centerMat));
+	world.Add(make_shared<Sphere>(Point3(-1.0, 0.0, -1.0), 0.5, leftMat));
+	world.Add(make_shared<Sphere>(Point3(1.0, 0.0, -1.0), 0.5, rightMat));
 
     // Camera
     Camera cam;

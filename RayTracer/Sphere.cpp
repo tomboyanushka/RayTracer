@@ -29,6 +29,7 @@ bool Sphere::IsHit(const Ray& ray, double tMin, double tMax, HitRecord& rec) con
 	rec.p = ray.PointAtParamter(rec.t);
 	Vec3 outwardNormal = (rec.p - center) / radius;
 	rec.SetFaceNormal(ray, outwardNormal);
+	rec.material = material;
 
 	return true;
 }

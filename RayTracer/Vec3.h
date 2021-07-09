@@ -52,6 +52,13 @@ public:
 		return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
 	}
 
+	bool NearZero() const
+	{
+		// Return true if the vector is near zero in all dimensions
+		const auto s = 1e-8;
+		return (fabs(e[0] < s) && fabs(e[1] < s) && fabs(e[2] < s));
+	}
+
 public:
 	double e[3];
 };
@@ -59,8 +66,6 @@ public:
 // Type aliases for vec3
 using Point3 = Vec3;   // 3D point
 using Color = Vec3;    // RGB color
-
-#endif
 
 // Utility functions
 inline std::ostream& operator<<(std::ostream &out, const Vec3 &v)
@@ -114,3 +119,10 @@ inline Vec3 UnitVector(Vec3 v)
 {
 	return v / v.length();
 }
+
+inline Vec3 Reflect(const Vec3& ray, const Vec3& normal)
+{
+	return ray - 2 * Dot(ray, normal) * normal;
+}
+
+#endif
