@@ -125,4 +125,12 @@ inline Vec3 Reflect(const Vec3& ray, const Vec3& normal)
 	return ray - 2 * Dot(ray, normal) * normal;
 }
 
+inline Vec3 Refract(const Vec3& uv, const Vec3& normal, double etaOverEtaPrime)
+{
+	auto cosTheta = fmin(Dot(-uv, normal), 1.0);
+	Vec3 rayOutPerpendicular = etaOverEtaPrime * (uv + cosTheta * normal);
+	Vec3 rayOutParallel = -sqrt(fabs(1.0 - rayOutPerpendicular.length_squared())) * normal;
+	return rayOutPerpendicular + rayOutParallel;
+}
+
 #endif
