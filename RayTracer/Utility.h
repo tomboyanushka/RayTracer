@@ -78,6 +78,17 @@ Vec3 Random_inHemisphere(const Vec3& normal)
 	}
 }
 
+Vec3 Random_inUnitDisk()
+{
+	while (true)
+	{
+		auto p = Vec3(RandomDouble(-1, 1), RandomDouble(-1, 1), 0);
+		if(p.length_squared() >= 1)
+			continue;
+		return p;
+	}
+}
+
 inline double Clamp(double x, double min, double max)
 {
 	if (x < min) return min;
