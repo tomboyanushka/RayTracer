@@ -52,21 +52,22 @@ int main() {
     const double gamma = 2.4;
 
     // World
+    auto R = cos(pi / 4);
     HittableList world;
 
-    auto groundMat = make_shared<Lambertian>(Color(0.8, 0.8, 0.0));
-    auto centerMat = make_shared<Lambertian>(Color(0.1, 0.2, 0.5));
-    auto leftMat = make_shared<Dielectric>(1.5);
-    auto rightMat = make_shared<Metal>(Color(0.8, 0.6, 0.2), 0.0);
+	auto materialGround = make_shared<Lambertian>(Color(0.8, 0.8, 0.0));
+	auto materialCenter = make_shared<Lambertian>(Color(0.1, 0.2, 0.5));
+	auto materialLeft = make_shared<Dielectric>(1.5);
+	auto materialRight = make_shared<Metal>(Color(0.8, 0.6, 0.2), 0.0);
 
-	world.Add(make_shared<Sphere>(Point3(0.0, -100.5, -1.0), 100.0, groundMat));
-	world.Add(make_shared<Sphere>(Point3(0.0, 0.0, -1.0), 0.5, centerMat));
-	world.Add(make_shared<Sphere>(Point3(-1.0, 0.0, -1.0), 0.5, leftMat));
-	world.Add(make_shared<Sphere>(Point3(-1.0, 0.0, -1.0), -0.4, leftMat));
-	world.Add(make_shared<Sphere>(Point3(1.0, 0.0, -1.0), 0.5, rightMat));
+	world.Add(make_shared<Sphere>(Point3(0.0, -100.5, -1.0), 100.0, materialGround));
+	world.Add(make_shared<Sphere>(Point3(0.0, 0.0, -1.0), 0.5, materialCenter));
+	world.Add(make_shared<Sphere>(Point3(-1.0, 0.0, -1.0), 0.5, materialLeft));
+	world.Add(make_shared<Sphere>(Point3(-1.0, 0.0, -1.0), -0.45, materialLeft));
+	world.Add(make_shared<Sphere>(Point3(1.0, 0.0, -1.0), 0.5, materialRight));
 
     // Camera
-    Camera cam;
+    Camera cam(Point3(-2,2,1), Point3(0,0,-1), Vec3(0,1,0), 90.0, aspectRatio);
 
     // Render the image
     std::cout << "P3\n" << imageWidth << ' ' << imageHeight << "\n255\n";
