@@ -41,37 +41,80 @@ Color RayColor(const Ray& ray, const Hittable& world, int depth)
 	return (1.0f - t) * Color(1.0f, 1.0f, 1.0f) + t * Color(0.5f, 0.7f, 1.0f);
 }
 
+HittableList Scene()
+{
+    HittableList world;
+
+    auto groundMat = make_shared<Lambertian>(Color(0.5, 0.5, 0.5));
+    world.Add(make_shared<Sphere>(Point3(0, -1000, 0), 1000, groundMat));
+
+    for (int a = -11; a < 11; ++a)
+    {
+        for (int b = -11; b < 11; ++b)
+        {
+            auto chooseMat = RandomDouble();
+            Point3 center(a + 0.9 * RandomDouble(), 0.2, b + 0.9 * RandomDouble());
+
+            if ((center - Point3(4, 0.2, 0)).length() > 0.9)
+            {
+                shared_ptr<Material> sphereMat;
+
+                if (chooseMat < 0.8)
+                {
+                    // diffuse
+                    auto albedo = Random() * Random();
+					sphereMat = make_shared<Lambertian>(albedo);
+					world.Add(make_shared<Sphere>(center, 0.2, sphereMat));
+                }
+                else if (chooseMat < 0.95)
+                {
+                    // Metal
+                    auto albedo = Random(0.5, 1);
+                    auto fuzz = RandomDouble(0, 0.5);
+                    sphereMat = make_shared<Metal>(albedo, fuzz);
+                    world.Add(make_shared<Sphere>(center, 0.2, sphereMat));
+                }
+                else
+                {
+                    // Glass
+                    sphereMat = make_shared<Dielectric>(1.5);
+                    world.Add(make_shared<Sphere>(center, 0.2, sphereMat));
+                }
+            }
+        }
+    }
+
+	auto material1 = make_shared<Dielectric>(1.5);
+	world.Add(make_shared<Sphere>(Point3(0, 1, 0), 1.0, material1));
+
+	auto material2 = make_shared<Lambertian>(Color(0.4, 0.2, 0.1));
+	world.Add(make_shared<Sphere>(Point3(-4, 1, 0), 1.0, material2));
+
+	auto material3 = make_shared<Metal>(Color(0.7, 0.6, 0.5), 0.0);
+	world.Add(make_shared<Sphere>(Point3(4, 1, 0), 1.0, material3));
+
+	return world;
+}
+
 int main() {
 
     // Image Size
-    const auto aspectRatio = 16.0f / 9.0f;
-    const int imageWidth = 400;
+    const auto aspectRatio = 3.0f / 2.0f;
+    const int imageWidth = 1200;
     const int imageHeight = static_cast<int>(imageWidth / aspectRatio);
-    const int samplesPerPixel = 100;
+    const int samplesPerPixel = 500;
     const int maxDepth = 50;
     const double gamma = 2.4;
 
     // World
-    auto R = cos(pi / 4);
-    HittableList world;
-
-	auto materialGround = make_shared<Lambertian>(Color(0.8, 0.8, 0.0));
-	auto materialCenter = make_shared<Lambertian>(Color(0.1, 0.2, 0.5));
-	auto materialLeft = make_shared<Dielectric>(1.5);
-	auto materialRight = make_shared<Metal>(Color(0.8, 0.6, 0.2), 0.0);
-
-	world.Add(make_shared<Sphere>(Point3(0.0, -100.5, -1.0), 100.0, materialGround));
-	world.Add(make_shared<Sphere>(Point3(0.0, 0.0, -1.0), 0.5, materialCenter));
-	world.Add(make_shared<Sphere>(Point3(-1.0, 0.0, -1.0), 0.5, materialLeft));
-	world.Add(make_shared<Sphere>(Point3(-1.0, 0.0, -1.0), -0.45, materialLeft));
-	world.Add(make_shared<Sphere>(Point3(1.0, 0.0, -1.0), 0.5, materialRight));
+    auto world = Scene();
 
     // Camera
-    Point3 lookFrom(3, 3, 2);
-    Point3 lookAt(0, 0, -1);
+    Point3 lookFrom(13, 2, 3);
+    Point3 lookAt(0, 0, 0);
     Vec3 vUp(0, 1, 0);
-    auto distToFocus = (lookFrom - lookAt).length();
-    auto aperture = 2.0;
+    auto distToFocus = 10.0;
+    auto aperture = 0.1;
     Camera cam(lookFrom, lookAt, vUp, 20, aspectRatio, aperture, distToFocus);
 
     // Render the image
